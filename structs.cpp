@@ -14,7 +14,7 @@ struct Type_Topping
 //Global:
 vector<Type_Coffee> types_coffee;
 vector<Type_Topping> types_topping;
-//
+////
 class Coffee_Shop
 {
 public:
