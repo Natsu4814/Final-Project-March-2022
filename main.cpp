@@ -5,7 +5,6 @@ char yn;
 
 int main()
 {
-start:
     Coffee_Shop s1;
     char yn;
     cin >> yn;
@@ -14,11 +13,6 @@ start:
         if(s1.logIn() == true)
         {
             
-        }
-        else
-        {
-            goto start;
-            system("cls");
         }
     }
     else{}
