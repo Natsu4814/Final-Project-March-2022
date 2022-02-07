@@ -11,15 +11,34 @@ struct Type_Topping
     string topping;
     double price;
 };
-
-vector<Type_Coffee> types_coffee;
-vector<Type_Topping> types_topping;
-
+    vector<Type_Coffee> types_coffee;
+    vector<Type_Topping> types_topping;
 class Coffee_Shop
 {
-    string login = "admin";
-    string password = "admin";
 public:
+    void make_choise()
+    {
+        cout << "> Choose position from menu: ";
+        int number;
+        cin >> number;
+        Type_Coffee chosen_coffee;
+        chosen_coffee = types_coffee[number - 1];
+        cout << chosen_coffee.coffee_name;
+    }
+};
+
+
+class Coffee_Shop_Admin
+{
+    string login;
+    string password;
+
+public:
+    Coffee_Shop_Admin()
+    {
+        login = "admin";
+        password = "admin";
+    }
     void add_coffee_type(string coffee_name, double price_m, double price_l)
     {
         Type_Coffee new_type;
@@ -55,6 +74,7 @@ public:
 
 class Guest
 {
+    string Name;
 public:
     void show_menu()
     {
@@ -83,14 +103,5 @@ public:
                 cout << i+1 << "." << types_topping.at(i).topping;
             }
         }
-    }
-        void make_choise()
-    {
-        cout << "> Choose position from menu: ";
-        int number;
-        cin >> number;
-        Type_Coffee chosen_coffee;
-        chosen_coffee = types_coffee[number - 1];
-        cout << chosen_coffee.coffee_name;
     }
 };
