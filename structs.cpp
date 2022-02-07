@@ -11,8 +11,10 @@ struct Type_Topping
     string topping;
     double price;
 };
-    vector<Type_Coffee> types_coffee;
-    vector<Type_Topping> types_topping;
+//Global:
+vector<Type_Coffee> types_coffee;
+vector<Type_Topping> types_topping;
+//
 class Coffee_Shop
 {
 public:
@@ -26,13 +28,10 @@ public:
         cout << chosen_coffee.coffee_name;
     }
 };
-
-
 class Coffee_Shop_Admin
 {
     string login;
     string password;
-
 public:
     Coffee_Shop_Admin()
     {
@@ -54,27 +53,32 @@ public:
         new_type.price = price;
         types_topping.push_back(new_type);
     }
-
-    bool logIn()
+    bool log_in()
     {
+        tryAgain:
         cout << "Enter login: ";
         string lg;
-        cin >> lg;
+        getline(cin, lg);
         cout << "Enter password: ";
         string pw;
-        cin >> pw;
+        getline(cin, pw);
         if(login == lg && password == pw)
             return true;
         else
         {
-            return false;
+            goto tryAgain;
         }
     }
 };
-
+struct Guest_BIO
+{
+    string name;
+    string phone_number;
+    int count = 0;
+};
 class Guest
 {
-    string Name;
+    vector<Guest_BIO> guests;
 public:
     void show_menu()
     {
@@ -103,5 +107,45 @@ public:
                 cout << i+1 << "." << types_topping.at(i).topping;
             }
         }
+    }
+    void sing_up()
+    {
+        cout << "> Enter your name: ";
+        string name;
+        getline(cin, name);
+        cout << "> Enter your phone number: ";
+        string phone;
+        getline(cin, phone);
+        Guest_BIO new_guest;
+        new_guest.name = name;
+        new_guest.phone_number = phone;
+        for(int i = 0; i < guests.size(); i++)
+        {
+            if(guests.at(i).phone_number == new_guest.phone_number)
+            {
+                cout << "User with such phone number is already exists\n";
+                return;
+            }
+        }
+        guests.push_back(new_guest);
+    }
+    bool log_in()
+    {
+        do
+        {
+            cout << "> Enter phone number: ";
+            string buff;
+            getline(cin, buff);
+            for(int i = 0; i < guests.size(); i++)
+            {
+                if(guests.at(i).phone_number == buff)
+                    return true;
+                else
+                    break;
+            }
+            cout << "> Would you like to retry(y/n): ";
+            char yn; 
+            cin >> yn;
+        } while(yn ==  'y' || yn == 'Y');
     }
 };
