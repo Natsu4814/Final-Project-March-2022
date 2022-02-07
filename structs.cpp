@@ -35,15 +35,7 @@ public:
         new_type.price = price;
         types_topping.push_back(new_type);
     }
-    void make_choise()
-    {
-        cout << "Choose position from menu: ";
-        int number;
-        cin >> number;
-        Type_Coffee chosen_coffee;
-        chosen_coffee = types_coffee[number - 1];
-        cout << chosen_coffee.coffee_name;
-    }
+
     bool logIn()
     {
         cout << "Enter login: ";
@@ -68,16 +60,15 @@ public:
     {
         cout << "\t\tMENU:\n";
         cout << "Drinks: \n";
-        cout << "Name" << setw(20) << "M    L\n"; 
         if(types_coffee.size() == 0)
         {
-            cout << "There is no coffee types now";
+            cout << "There is no coffee types now\n";
         }
         else
         {
         for(int i = 0; i < types_coffee.size(); i++)
             {
-                cout << i+1 << "." << types_coffee.at(i).coffee_name << setw(12) << types_coffee.at(i).price_m << "   " << types_coffee.at(i).price_l << "\n";
+                cout << i+1 << "." << types_coffee.at(i).coffee_name << "For M:" << types_coffee.at(i).price_m << "  For L:" << types_coffee.at(i).price_l << "\n";
             }
         }
         cout << "Toppings: \n";
@@ -92,5 +83,14 @@ public:
                 cout << i+1 << "." << types_topping.at(i).topping;
             }
         }
+    }
+        void make_choise()
+    {
+        cout << "> Choose position from menu: ";
+        int number;
+        cin >> number;
+        Type_Coffee chosen_coffee;
+        chosen_coffee = types_coffee[number - 1];
+        cout << chosen_coffee.coffee_name;
     }
 };
