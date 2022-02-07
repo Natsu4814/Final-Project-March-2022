@@ -18,6 +18,7 @@ start:
         else
         {
             goto start;
+            system("cls");
         }
     }
     else{}
