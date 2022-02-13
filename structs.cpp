@@ -12,11 +12,14 @@ struct Type_Topping
     double price;
 };
 //Global:
-vector<Type_Coffee> types_coffee;
-vector<Type_Topping> types_topping;
+
 ////
 class Coffee_Shop
 {
+    vector<Type_Coffee> types_coffee;
+    vector<Type_Topping> types_topping;
+    string login;
+    string password;
 public:
     void make_choise()
     {
@@ -27,18 +30,7 @@ public:
         chosen_coffee = types_coffee[number - 1];
         cout << chosen_coffee.coffee_name;
     }
-};
-class Coffee_Shop_Admin
-{
-    string login;
-    string password;
-public:
-    Coffee_Shop_Admin()
-    {
-        login = "admin";
-        password = "admin";
-    }
-    void add_coffee_type(string coffee_name, double price_m, double price_l)
+        void add_coffee_type(string coffee_name, double price_m, double price_l)
     {
         Type_Coffee new_type;
         new_type.coffee_name = coffee_name;
@@ -69,19 +61,34 @@ public:
             goto tryAgain;
         }
     }
+    vector<Type_Coffee> get_coffee_types()
+    {
+        return types_coffee;
+    }
+    vector<Type_Topping> get_topping_types()
+    {
+        return types_topping;
+    }
 };
+
 struct Guest_BIO
 {
     string name;
     string phone_number;
     int count = 0;
 };
+
 class Guest
 {
+    Coffee_Shop c1;
     vector<Guest_BIO> guests;
 public:
     void show_menu()
     {
+        vector<Type_Coffee> types_coffee;
+        vector<Type_Topping> types_topping;
+        types_coffee = c1.get_coffee_types();
+        types_topping = c1.get_topping_types();
         cout << "\t\tMENU:\n";
         cout << "Drinks: \n";
         if(types_coffee.size() == 0)
@@ -131,6 +138,7 @@ public:
     }
     bool log_in()
     {
+        char yn;
         do
         {
             cout << "> Enter phone number: ";
@@ -144,8 +152,31 @@ public:
                     break;
             }
             cout << "> Would you like to retry(y/n): ";
-            char yn; 
             cin >> yn;
         } while(yn ==  'y' || yn == 'Y');
+    }
+};
+
+class IO_Manager
+{
+    Coffee_Shop c1; 
+public:
+    void save_to_file()
+    {
+        
+    }
+    void load_from_menu()
+    {
+        string line;
+        ifstream fout("text.txt"); 
+        if (fout.is_open())
+        {
+            while ( getline (fout,line) )
+            {
+                cout << line << '\n';
+            }
+            fout.close();
+        }
+        else cout << "Unable to open file"; 
     }
 };
