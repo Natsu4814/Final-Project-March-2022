@@ -1,7 +1,7 @@
 #include "header.h"
 #include "structs.cpp"
 
-char yn;
+char yes_no;
 
 int main()
 {

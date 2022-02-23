@@ -227,31 +227,27 @@ public:
     void save_to_file(Coffee_Shop& c1)
     {   
         vector<Type_Coffee> coffee_buffer = c1.get_coffee_types();
-        ifstream fin;
+        ofstream fin;
         fin.open("coffee.txt");
-        string space = " ";
         for(int i = 0; i < coffee_buffer.size(); i++)
         {
-            fin >> coffee_buffer[i].coffee_name >> space >> coffee_buffer[i].price_m >> space >> coffee_buffer[i].price_l;
+            fin << coffee_buffer[i].coffee_name << " " << coffee_buffer[i].price_m << " " << coffee_buffer[i].price_l << "\n";
         }
     }
     void load_into_menu(Coffee_Shop& c1)
     {
         string line;
-        ifstream fout("coffee.txt"); 
-        if (fout.is_open())
+        ifstream fout;
+        fout.open("coffee.txt");
+        while (!(fout.eof()))
         {
-            while (!fout.eof())
-            {
-                getline (fout,line); 
-                string* strings = string_to_tok.tok(line, ' ');
-                string name = strings[0];
-                double medium_cup = stod(strings[1]);
-                double big_cup = stod(strings[2]);
-                c1.add_coffee_type(name, medium_cup, big_cup);
-            }
-            fout.close();
+            getline (fout,line); 
+            string* strings = string_to_tok.tok(line, ' ');
+            string name = strings[0];
+            double medium_cup = stod(strings[1]);
+            double big_cup = stod(strings[2]);
+            c1.add_coffee_type(name, medium_cup, big_cup);
         }
-        else cout << "Unable to open file"; 
+        fout.close();
     }
 };
