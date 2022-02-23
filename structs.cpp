@@ -231,7 +231,7 @@ public:
         fin.open("coffee.txt");
         for(int i = 0; i < coffee_buffer.size(); i++)
         {
-            fin << coffee_buffer[i].coffee_name << " " << coffee_buffer[i].price_m << " " << coffee_buffer[i].price_l << "\n";
+            fin << "\n" << coffee_buffer[i].coffee_name << " " << coffee_buffer[i].price_m << " " << coffee_buffer[i].price_l;
         }
     }
     void load_into_menu(Coffee_Shop& c1)
@@ -239,7 +239,7 @@ public:
         string line;
         ifstream fout;
         fout.open("coffee.txt");
-        while (!(fout.eof()))
+        while (!fout.eof())
         {
             getline (fout,line); 
             string* strings = string_to_tok.tok(line, ' ');

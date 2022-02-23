@@ -4,7 +4,7 @@ Doppio 15 20
 Makkiato 12 17
 Ristretto 5 10
 Lungo 12 17
-Kon panna 15 25
 Korretto 15 25
 Irish 20 30
 Glace 25 35
+Frappe 20 25
