@@ -1,66 +1,5 @@
 #include "header.h"
-
-class My_String : std::string
-{
-
-    int count = 1;
-    std::string* strs;
-public:
-    std::string* tok(std::string str ,char delim)
-    {
-        int len_of_str = str.length();
-        int len_of_part = 0;
-        int start_of_for = 0;
-        for (int i = 0; i < len_of_str; i++)
-        {
-            if (str[i] == delim)
-                count += 1;
-        }
-        strs = new std::string[count];
-
-
-        do
-        {
-            len_of_part++;
-        } while (str[len_of_part] != delim);
-
-
-        for(int q = 0; q < count;q++)
-        { 
-
-            for (int i = start_of_for; i < start_of_for + len_of_part; i++)
-            {
-                strs[q] += str[i];
-            }
-            start_of_for = start_of_for + len_of_part + 1;
-            len_of_part = 0;
-            for (int i = start_of_for; i < len_of_str; i++)
-            {
-                if (str[i] != delim)
-                    len_of_part++;
-                else if(str[i] == delim) break;
-            }
-        }
-
-        return strs;
-    }
-
-    std::string* return_strs()
-    {
-        return strs;
-    }
-
-    void print()
-    {
-        for (int i = 0; i < count; i++)
-            std::cout << strs[i] << " ";
-    }
-    
-    ~My_String()
-    {
-        delete[] strs;
-    }
-};
+#include "system.cpp"
 
 struct Type_Coffee
 {
@@ -81,17 +20,7 @@ class Coffee_Shop
     vector<Type_Topping> types_topping;
     string login;
     string password;
-public:
-    void make_choise()
-    {
-        cout << "> Choose position from menu: ";
-        int number;
-        cin >> number;
-        Type_Coffee chosen_coffee;
-        chosen_coffee = types_coffee[number - 1];
-        cout << chosen_coffee.coffee_name;
-    }
-    
+public:  
     void add_coffee_type(string coffee_name, double price_m, double price_l)
     {
         Type_Coffee new_type;
@@ -109,23 +38,6 @@ public:
         types_topping.push_back(new_type);
     }
     
-    bool log_in()
-    {
-        tryAgain:
-        cout << "Enter login: ";
-        string lg;
-        getline(cin, lg);
-        cout << "Enter password: ";
-        string pw;
-        getline(cin, pw);
-        if(login == lg && password == pw)
-            return true;
-        else
-        {
-            goto tryAgain;
-        }
-    }
-   
     vector<Type_Coffee> get_coffee_types()
     {
         return types_coffee;
@@ -135,89 +47,34 @@ public:
     {
         return types_topping;
     }
-    
-    void show_menu()
+
+    bool log_in(string login, string password)
     {
-        cout << "\t\tMENU:\n";
-        cout << "Drinks: \n";
-        if(types_coffee.size() == 0)
-        {
-            cout << "There is no coffee types now\n";
-        }
-        else
-        {
-        for(int i = 0; i < types_coffee.size(); i++)
-            {
-                cout << i+1 << "." << types_coffee.at(i).coffee_name << " M:" << types_coffee.at(i).price_m << " L:" << types_coffee.at(i).price_l << "\n";
-            }
-        }
-        cout << "Toppings: \n";
-        if(types_topping.size() == 0)
-        {
-            cout << "There is no toppings now\n";
-        }
-        else
-        {
-            for(int i = 0; i < types_topping.size(); i++)
-            {
-                cout << i+1 << "." << types_topping.at(i).topping;
-            }
-        }
+        if(this->login == login && this->password == password)
+            return true;
+        return false;
     }
 };
 
-struct Guest_BIO
+class Guest_BIO
 {
     string name;
     string phone_number;
-    int count = 0;
-};
-
-class Guest
-{
-    vector<Guest_BIO> guests;
+    int count;
 public:
+    bool sign_up(string name, string phone_number)
+    {
+        this->name = name;
+        this->phone_number = phone_number;
+        count = 0;
+        return true;
+    }
 
-    void sing_up()
+    bool log_in(string phone_number)
     {
-        cout << "> Enter your name: ";
-        string name;
-        getline(cin, name);
-        cout << "> Enter your phone number: ";
-        string phone;
-        getline(cin, phone);
-        Guest_BIO new_guest;
-        new_guest.name = name;
-        new_guest.phone_number = phone;
-        for(int i = 0; i < guests.size(); i++)
-        {
-            if(guests.at(i).phone_number == new_guest.phone_number)
-            {
-                cout << "User with such phone number is already exists\n";
-                return;
-            }
-        }
-        guests.push_back(new_guest);
+
     }
-    bool log_in()
-    {
-        char yn;
-        do
-        {
-            cout << "> Enter phone number: ";
-            string buff;
-            getline(cin, buff);
-            for(int i = 0; i < guests.size(); i++)
-            {
-                if(guests.at(i).phone_number == buff)
-                    return true;
-                else
-                    break;
-            }
-            cout << "> Would you like to retry(y/n): ";
-            cin >> yn;
-        } while(yn ==  'y' || yn == 'Y');
-    }
+
 };
 
 class IO_Manager
@@ -230,9 +87,7 @@ public:
         ofstream fin;
         fin.open("coffee.txt");
         for(int i = 0; i < coffee_buffer.size(); i++)
-        {
             fin << "\n" << coffee_buffer[i].coffee_name << " " << coffee_buffer[i].price_m << " " << coffee_buffer[i].price_l;
-        }
     }
     void load_into_menu(Coffee_Shop& c1)
     {
@@ -249,5 +104,77 @@ public:
             c1.add_coffee_type(name, medium_cup, big_cup);
         }
         fout.close();
+    }
+};
+
+class Menu_Handler
+{
+    Coffee_Shop c1;
+    IO_Manager manager;
+    char yes_no;
+public:
+    void show_coffee_shop_menu()
+    {
+        cout << "\t\tMENU:\n";
+        cout << "Drinks: \n";
+        vector<Type_Coffee> types_coffee = c1.get_coffee_types();
+        if(types_coffee.size() == 0)
+        {
+            cout << "There is no coffee types now\n";
+        }
+        else
+        {
+        for(int i = 0; i < types_coffee.size(); i++)
+            {
+                cout << i+1 << "." << types_coffee.at(i).coffee_name << " M:" << types_coffee.at(i).price_m << " L:" << types_coffee.at(i).price_l << "\n";
+            }
+        }
+        cout << "Toppings: \n";
+        vector<Type_Topping> types_topping = c1.get_topping_types();
+        if(types_topping.size() == 0)
+        {
+            cout << "There is no toppings now\n";
+        }
+        else
+        {
+            for(int i = 0; i < types_topping.size(); i++)
+            {
+                cout << i+1 << "." << types_topping.at(i).topping;
+            }
+        }
+    }
+    
+    void menu()
+    {
+        
+    }
+
+    bool login_as_guest(string phone_number)
+    {
+        cout << "> Log in or sign up(1/2): ";
+        int switcher;
+        switch(switcher)
+        {
+        case 1:
+            {
+                break;
+            }
+        case 2:
+            {
+                break;
+            }
+        }
+    }
+
+    bool login_as_admin()
+    {
+        string login;
+        string password;
+        cin.ignore();
+        getline(cin, login);
+        getline(cin, password);
+        if(c1.log_in(login, password))
+            return true;
+        return false;
     }
 };
