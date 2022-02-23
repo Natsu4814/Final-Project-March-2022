@@ -5,6 +5,10 @@ char yn;
 
 int main()
 {
+    Coffee_Shop c1;
     IO_Manager manager;
-    manager.load_from_menu();
+    manager.load_into_menu(c1);
+    c1.add_coffee_type("Frappe", 20, 25);
+    c1.show_menu();
+    manager.save_to_file(c1);
 }
