@@ -21,6 +21,11 @@ class Coffee_Shop
     string login;
     string password;
 public:  
+    Coffee_Shop()
+    {
+        login = "admin";
+        password = "admin";
+    }
     void add_coffee_type(string coffee_name, double price_m, double price_l)
     {
         Type_Coffee new_type;
@@ -93,6 +98,7 @@ class IO_Manager
 {
     My_String string_to_tok;
 public:
+//Menu saving
     void save_to_file(Coffee_Shop& c1)
     {
         ofstream fin;   
@@ -115,6 +121,7 @@ public:
                 fin << "\n";
         }
     }
+
     void load_into_menu(Coffee_Shop& c1)
     {
         string line;
@@ -141,13 +148,25 @@ public:
         }
         fout.close();
     }
+//User saving
+    void save_users()
+    {
+        ofstream fin;
+        fin.open("guests.txt");
+            vector<Guests> guests_buffer = 
+        fin.close();
+    }
 };
 
 class Menu_Handler
 {
     Coffee_Shop c1;
+    Guests g1;
     IO_Manager manager;
     char yes_no;
+    //For general use
+    string name;
+    string phone_number;
 public:
     void show_coffee_shop_menu()
     {
@@ -184,32 +203,38 @@ public:
     {
         manager.load_into_menu(c1);
         manager.save_to_file(c1);
-        show_coffee_shop_menu();
+        cout << "\t\t\t\t\t\t\t\tWelcome\n";
+        cout << "> Enter your phone number: ";
+        cin >> phone_number;
+        login_as_guest(phone_number);
+
     }
 
-    bool login_as_guest(string phone_number)
+    void login_as_guest(string phone_number)
     {
-        cout << "> Log in or sign up(1/2): ";
         int switcher;
-        cin >> switcher;
-        switch(switcher)
+        do
         {
-        case 1:
+            g1.log_in(phone_number);
+            if(!g1.log_in(phone_number))
             {
-                return true;
-                break;
+                cout << "> Try again, or register account(1/2): ";
+                cin >> switcher;
+                if(switcher == 1)
+                    break;
+                if(switcher == 2)
+                {
+                    cout << "> Enter your name please: ";
+                    cin >> name;
+                    g1.sign_up(name, phone_number);
+                }
+                else
+                {
+                    cout << "> Invalid number";
+                    break;
+                }
             }
-        case 2:
-            {
-                return true;
-                break;
-            }
-        default:
-            {
-                cout << "> Invalid value";
-                break;
-            }
-        }
+        } while (!g1.log_in(phone_number));
     }
 
     bool login_as_admin()
