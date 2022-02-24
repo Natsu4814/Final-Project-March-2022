@@ -56,23 +56,35 @@ public:
     }
 };
 
-class Guest_BIO
+struct Guest_BIO
 {
     string name;
     string phone_number;
     int count;
+};
+
+class Guests
+{
+    vector<Guest_BIO> guests;
 public:
     bool sign_up(string name, string phone_number)
     {
-        this->name = name;
-        this->phone_number = phone_number;
-        count = 0;
+        Guest_BIO new_guest;
+        new_guest.name = name;
+        new_guest.phone_number = phone_number;
+        new_guest.count = 0;
+        guests.push_back(new_guest);
         return true;
     }
 
     bool log_in(string phone_number)
     {
-
+        for(int i = 0; i , guests.size(); i++)
+        {
+            if(guests[i].phone_number == phone_number)
+                return true;
+        }
+        return false;
     }
 
 };
@@ -82,12 +94,26 @@ class IO_Manager
     My_String string_to_tok;
 public:
     void save_to_file(Coffee_Shop& c1)
-    {   
+    {
+        ofstream fin;   
         vector<Type_Coffee> coffee_buffer = c1.get_coffee_types();
-        ofstream fin;
         fin.open("coffee.txt");
         for(int i = 0; i < coffee_buffer.size(); i++)
-            fin << "\n" << coffee_buffer[i].coffee_name << " " << coffee_buffer[i].price_m << " " << coffee_buffer[i].price_l;
+        {
+            fin << coffee_buffer[i].coffee_name << " " << coffee_buffer[i].price_m << " " << coffee_buffer[i].price_l;
+            if(i < coffee_buffer.size()-1)
+                fin << "\n";    
+        }
+        fin.close();
+        //Topping save
+        vector<Type_Topping> topping_buffer = c1.get_topping_types();
+        fin.open("toppings.txt");
+        for(int i = 0; i < topping_buffer.size(); i++)
+        {
+            fin << topping_buffer[i].topping << " " << topping_buffer[i].price;
+            if(i < topping_buffer.size()-1)
+                fin << "\n";
+        }
     }
     void load_into_menu(Coffee_Shop& c1)
     {
@@ -102,6 +128,16 @@ public:
             double medium_cup = stod(strings[1]);
             double big_cup = stod(strings[2]);
             c1.add_coffee_type(name, medium_cup, big_cup);
+        }
+        fout.close();
+        fout.open("toppings.txt");
+        while(!fout.eof())
+        {
+            getline(fout, line);
+            string* strings = string_to_tok.tok(line, ' ');
+            string name = strings[0];
+            double price = stod(strings[1]);
+            c1.add_topping_type(name, price);
         }
         fout.close();
     }
@@ -139,28 +175,38 @@ public:
         {
             for(int i = 0; i < types_topping.size(); i++)
             {
-                cout << i+1 << "." << types_topping.at(i).topping;
+                cout << i+1 << "." << types_topping.at(i).topping << "\n";
             }
         }
     }
     
     void menu()
     {
-        
+        manager.load_into_menu(c1);
+        manager.save_to_file(c1);
+        show_coffee_shop_menu();
     }
 
     bool login_as_guest(string phone_number)
     {
         cout << "> Log in or sign up(1/2): ";
         int switcher;
+        cin >> switcher;
         switch(switcher)
         {
         case 1:
             {
+                return true;
                 break;
             }
         case 2:
             {
+                return true;
+                break;
+            }
+        default:
+            {
+                cout << "> Invalid value";
                 break;
             }
         }
@@ -171,7 +217,9 @@ public:
         string login;
         string password;
         cin.ignore();
+        cout << "> Enter login: ";
         getline(cin, login);
+        cout << "Enter password: ";
         getline(cin, password);
         if(c1.log_in(login, password))
             return true;
