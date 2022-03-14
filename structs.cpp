@@ -8,13 +8,23 @@ struct Guest_BIO
 	int count;
 };
 
-class Guests
+class Guests    
 {
 	vector<Guest_BIO> guests;
 public:
 	bool sign_up(string name, string phone_number)
 	{
+		int num = 0;
+		string to_replace = "_";
 		Guest_BIO new_guest;
+		for(int i = 0; i < name.size(); i++)
+		{
+			if(name.at(i) == ' ')
+			{
+				num = i;
+			}
+		}
+		name.replace(num, 1, to_replace);
 		new_guest.name = name;
 		new_guest.phone_number = phone_number;
 		new_guest.count = 0;
@@ -24,7 +34,7 @@ public:
 
 	int log_in(string phone_number)
 	{
-		for(int i = 0; i , guests.size(); i++)
+		for(int i = 0; i < guests.size(); i++)
 		{
 			if(guests.at(i).phone_number == phone_number)
 				return i;
@@ -42,6 +52,7 @@ class Receipt
 {
 	string person_name;
 	string coffee_name;
+	string topping_name;
 	double price;
 };
 
@@ -70,7 +81,6 @@ public:
 		login = "admin";
 		password = "admin";
 	}
-	
 	void add_coffee_type(string coffee_name, double price_m, double price_l)
 	{
 		Type_Coffee new_type;
@@ -79,7 +89,6 @@ public:
 		new_type.price_l = price_l;
 		types_coffee.push_back(new_type);
 	}
-	
 	void add_topping_type(string topping, double price)
 	{
 		Type_Topping new_type;
@@ -87,22 +96,13 @@ public:
 		new_type.price = price;
 		types_topping.push_back(new_type);
 	}
-	
 	vector<Type_Coffee> get_coffee_types()
 	{
 		return types_coffee;
-	}
-	
+	}	
 	vector<Type_Topping> get_topping_types()
 	{
 		return types_topping;
-	}
-
-	bool log_in(string login, string password)
-	{
-		if(this->login == login && this->password == password)
-			return true;
-		return false;
 	}
 };
 
@@ -113,10 +113,6 @@ class IO_Manager
 	vector<Type_Topping> topping_buffer;
 	vector<Guest_BIO> people_buffer;
 public:
-	IO_Manager()
-	{
-
-	}
 //Menu saving
 	void save_to_file(Coffee_Shop c1)
 	{
@@ -140,7 +136,7 @@ public:
 				fout << "\n";
 		}
 	}
-
+//Menu loading	
 	void load_into_menu(Coffee_Shop& c1)
 	{
 		string line;
@@ -169,8 +165,8 @@ public:
 		}
 		fin.close();
 	}
-//Operations with users
-	void save_users(Guests& g1)
+//User saving
+	void save_users(Guests g1)
 	{
 		people_buffer = g1.get_guests_vector();
 		ofstream fout;
@@ -178,12 +174,13 @@ public:
 			for(int i = 0; i < people_buffer.size(); i++)
 			{
 				fout << people_buffer.at(i).name << " " << people_buffer.at(i).phone_number;
-				if(i < topping_buffer.size()-1)
+				if(i < people_buffer.size()-1)
 					fout << "\n";
 			}
 		fout.close();
 	}
-	void load_users(Guests g1)
+//User loading	
+	void load_users(Guests &g1)
 	{
 		string line;
 		string phone_number;
@@ -209,8 +206,18 @@ class Menu_Handler
 	IO_Manager manager;
 	char yes_no;
 
+	int switcher;
+
+	string coffee_name;
+	double price_m;
+	double price_l;
+
+	string topping_name;
+	double price;
+	
 	string name;
 	string phone_number;
+	string password;
 public:
 	void show_coffee_shop_menu()
 	{
@@ -251,62 +258,103 @@ public:
 		cout << "\t\t\t\t\t\t\t\tWelcome\n";
 		cout << "> Enter your phone number: ";
 		cin >> phone_number;
-		Guest_BIO *new_guest = login_as_guest(phone_number);
-		
+		if(phone_number == "admin")
+		{
+			cin.ignore();
+			cout << "Enter password: ";
+			getline(cin, password);
+			if(password == "admin")
+			{
+				do
+				{					
+					cout << "Coffee or topping(1/2): ";
+					cin >> switcher;
+					if(switcher == 1)
+					{
+						cin.ignore();
+						cout << "Enter name of coffee: ";
+						getline(cin, coffee_name);
+						cout << "Enter price for medium cup: ";
+						cin >> price_m;
+						cout << "Enter price fo large cup: ";
+						cin >> price_l;
+						c1.add_coffee_type(coffee_name, price_m, price_l);
+						manager.save_to_file(c1);
+					}
+					else if(switcher == 2)
+					{
+						cin.ignore();
+						cout << "Enter name of topping: ";
+						getline(cin, topping_name);
+						cout << "Enter price for it: ";
+						cin >> price;
+						c1.add_topping_type(topping_name, price);
+						manager.save_to_file(c1);
+					}
+					else
+					{
+						cout << "Invalid value";
+						yes_no = false;
+					}
+				} while (yes_no == false);
+			}
+		}
+		else
+		{
+			Guest_BIO *new_guest = login_as_guest(g1, phone_number);
+			show_coffee_shop_menu();
+		}
 	}
 
-	Guest_BIO* login_as_guest(string phone_number)
+	Guest_BIO* login_as_guest(Guests g1 ,string phone_number)
 	{
-		manager.load_users(g1);
-		int switcher;
 		vector<Guest_BIO> guest_box = g1.get_guests_vector();
 		int guest_number;
-		do
+		guest_number = g1.log_in(phone_number);
+		Guest_BIO *ptr;
+		if(guest_number >= 0)
 		{
-			guest_number = g1.log_in(phone_number);
-			if(guest_number >= 0)
-			{
-				Guest_BIO *ptr = &guest_box[guest_number];
-				return ptr;
-			}
-			if(g1.log_in(phone_number) == -1)
-			{
-				cout << "> Try again, or register account(1/2): ";
-				cin >> switcher;
-				if(switcher == 1)
-				{
-					break;
-				}
-				if(switcher == 2)
-				{
-					cout << "> Enter your name please: ";
-					cin >> name;
-					g1.sign_up(name, phone_number);
-				}
-				else
-				{
-					cout << "> Invalid number";
-					break;
-				}
-			}
-		} while (g1.log_in(phone_number)==-1);
-	}
-
-	bool login_as_admin()
-	{
-		string login;
-		string password;
-		do
-		{
-		cin.ignore();
-		cout << "> Enter login: ";
-		getline(cin, login);
-		cout << "Enter password: ";
-		getline(cin, password);
-		if(c1.log_in(login, password))
-		{
-			return true;
+			ptr = &guest_box[guest_number];
 		}
-		}while(!c1.log_in(login, password));
+		else if(guest_number == -1)
+		{
+			cin >> switcher;
+			if(switcher == 1)
+			{
+				char yn = 'n';
+				do
+				{
+					getline(cin, phone_number);
+					guest_number = g1.log_in(phone_number);
+					if(guest_number >= 0)
+					{
+						ptr = &guest_box[guest_number];
+					}
+					if(guest_number == -1)
+					{
+						cout << "Would you like to try again or sing up(1/2): ";
+						cin >> switcher;
+						if(switcher == 1)
+						{
+							yn == 'y';
+						}		
+					}	
+				} while(yn == 'y');
+			}
+			if(switcher == 2)
+			{
+				cout << "Enter your name: ";
+				cin.ignore();
+				string name;
+				getline(cin, name);
+				cout << "Enter your phone number";
+				getline(cin, phone_number);
+				g1.sign_up(name, phone_number);
+				guest_number = g1.log_in(phone_number);
+				ptr = &guest_box[guest_number];
+				manager.save_users(g1);
+			}		
+		}
+		return ptr;
 	}
 };
