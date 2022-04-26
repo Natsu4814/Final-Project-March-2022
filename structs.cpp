@@ -48,14 +48,6 @@ public:
 	}
 };
 
-class Receipt
-{
-	string person_name;
-	string coffee_name;
-	string topping_name;
-	double price;
-};
-
 struct Type_Coffee
 {
 	string coffee_name;
@@ -99,7 +91,7 @@ public:
 	vector<Type_Coffee> get_coffee_types()
 	{
 		return types_coffee;
-	}	
+	}		
 	vector<Type_Topping> get_topping_types()
 	{
 		return types_topping;
@@ -303,6 +295,7 @@ public:
 		{
 			Guest_BIO *new_guest = login_as_guest(g1, phone_number);
 			show_coffee_shop_menu();
+
 		}
 	}
 
