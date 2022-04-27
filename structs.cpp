@@ -193,7 +193,6 @@ public:
 				return sum * 0.95;
 		else
 			return sum;
-
 	}
 	void set_name(string name)
 	{
@@ -317,11 +316,11 @@ public:
 	void show_coffee_shop_menu()
 	{
 		cout << "\t\tMENU:\n";
-		cout << "Drinks: \n";
+		cout << "> Drinks: \n";
 		vector<Type_Coffee> types_coffee = c1.get_coffee_types();
 		if(types_coffee.size() == 0)
 		{
-			cout << "There is no coffee types now\n";
+			cout << "> There is no coffee types now\n";
 		}
 		else
 		{
@@ -330,11 +329,11 @@ public:
 				cout << i+1 << "." << types_coffee.at(i).coffee_name << " P:" << types_coffee.at(i).price << " UAH\n";
 			}
 		}
-		cout << "Toppings: \n";
+		cout << "> Toppings: \n";
 		vector<Type_Topping> types_topping = c1.get_topping_types();
 		if(types_topping.size() == 0)
 		{
-			cout << "There is no toppings now\n";
+			cout << "> There is no toppings now\n";
 		}
 		else
 		{
@@ -350,7 +349,7 @@ public:
 		manager.save_to_file(c1); 
 		m2.load_users(g1);
  		cout << "\t\t\t\t\t\t\t\tWelcome\n";
-		cout << "Do you want to use/create discount card(1/2)";
+		cout << "> Do you want to use/create discount card(1/2): ";
 		cin >> switcher;
 		if(switcher == 1)
 		{
@@ -360,22 +359,22 @@ public:
 			if(phone_number == "admin")
 			{
 				cin.ignore();
-				cout << "Enter password: ";
+				cout << "> Enter password: ";
 				getline(cin, password);
 				if(password == "admin")
 				{
 					do
 					{					
-						cout << "Coffee or topping(1/2): ";
+						cout << "> Coffee or topping(1/2): ";
 						cin >> switcher;
 						if(switcher == 1)
 						{
 							cin.ignore();
-							cout << "Enter name of coffee: ";
+							cout << "> Enter name of coffee: ";
 							getline(cin, coffee_name);
-							cout << "Enter price for medium cup: ";
+							cout << "> Enter price for medium cup: ";
 							cin >> price_m;
-							cout << "Enter price fo large cup: ";
+							cout << "> Enter price fo large cup: ";
 							cin >> price_l;
 							c1.add_coffee_type(coffee_name, price);
 							manager.save_to_file(c1);
@@ -384,9 +383,9 @@ public:
 						else if(switcher == 2)
 						{
 							cin.ignore();
-							cout << "Enter name of topping: ";
+							cout << "> Enter name of topping: ";
 							getline(cin, topping_name);
-							cout << "Enter price for it: ";
+							cout << "> Enter price for it: ";
 							cin >> price;
 							c1.add_topping_type(topping_name, price);
 							manager.save_to_file(c1);
@@ -394,7 +393,7 @@ public:
 						}
 						else
 						{
-							cout << "Invalid value";
+							cout << "> Invalid value <";
 							yes_no = false;
 						}
 					} while (yes_no == false);
@@ -403,26 +402,27 @@ public:
 			else
 			{
 				Guest_BIO *new_guest = login_as_guest(g1, phone_number);
-				cout << "Welcome back, here is a menu";
+				cout << "> Welcome back, here is a menu";
 				show_coffee_shop_menu();
 				do
 				{
-					std::cout << "Which kind of coffee do you want to order, enter the number of position: ";
+					std::cout << "> Which kind of coffee do you want to order, enter the number of position: ";
 					std::cin >> position;
 					r1.choose_coffee(c1.get_coffee_types(), position);
-					std::cout << "Want to order some more or choose topping(y/n): ";
+					std::cout << "> Want to order some more or choose topping(y/n): ";
 					std::cin >> yes_no;
 				} while (yes_no == 'y' || yes_no == 'Y');
 				int size = r1.get_ammount_of_coffee();
 				for(int i = 0; i < size; i++)
 				{
-					std::cout << "Choose topping from menu(0 - nothing): ";
+					std::cout << "> Choose topping from menu(0 - nothing): ";
 					std::cin >> position;
 					if(position == 0)
-						break;
-					else if(position != 0 && position <! 0)
+						continue;
+					else if(position > 0)
 					{
-						std::cout << "Enter ammount of topping";
+						cin.ignore();
+						std::cout << "> Enter ammount of topping: ";
 						std::cin >> ammount;
 						r1.choose_topping(c1.get_topping_types(), position, ammount);
 					}
@@ -433,11 +433,11 @@ public:
 		}
 		if(switcher == 2)
 		{
-			cout << "Enter your name: ";
+			cout << "> Enter your name: ";
 			cin.ignore();
 			string name;
 			getline(cin, name);
-			cout << "Enter your phone number: ";
+			cout << "> Enter your phone number: ";
 			getline(cin, phone_number);
 			manager.set_phone_number(phone_number);
 			g1.sign_up(name, phone_number);
@@ -445,22 +445,23 @@ public:
 			show_coffee_shop_menu();
 			do
 			{
-				std::cout << "Which kind of coffee do you want to order, enter the number of position: ";
+				std::cout << "> Which kind of coffee do you want to order, enter the number of position: ";
 				std::cin >> position;
 				r1.choose_coffee(c1.get_coffee_types(), position);
-				std::cout << "Want to order some more or choose topping(y/n): ";
+				std::cout << "> Want to order some more or choose topping(y/n): ";
 				std::cin >> yes_no;
 			} while (yes_no == 'y' || yes_no == 'Y');
 			int size = r1.get_ammount_of_coffee();
 			for(int i = 0; i < size; i++)
 			{
-				std::cout << "Choose topping from menu(0 - nothing): ";
+				std::cout << "> Choose topping from menu(0 - nothing): ";
 				std::cin >> position;
 				if(position == 0)
-					break;
-				else if(position != 0 && position <! 0)
+					continue;
+				else if(position > 0)
 				{
-					std::cout << "Enter ammount of topping";
+					cin.ignore();
+					std::cout << "> Enter ammount of topping: ";
 					std::cin >> ammount;
 					r1.choose_topping(c1.get_topping_types(), position, ammount);
 				}
@@ -484,7 +485,7 @@ public:
 		}
 		else if(guest_number == -1)
 		{
-			cout << "Wrong phone number, do you want to try again, or register new discount card(1/2): ";
+			cout << "> Wrong phone number, do you want to try again, or register new discount card(1/2): ";
 			cin >> switcher;
 			if(switcher == 1)
 			{
@@ -500,7 +501,7 @@ public:
 					}
 					if(guest_number == -1)
 					{
-						cout << "Would you like to try again or sing up(1/2): ";
+						cout << "> Would you like to try again or sing up(1/2): ";
 						cin >> switcher;
 						if(switcher == 1)
 						{
