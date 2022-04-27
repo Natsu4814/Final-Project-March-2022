@@ -8,7 +8,20 @@ struct Guest_BIO
 	int count;
 };
 
-class Guests    
+struct Type_Coffee
+{
+	string coffee_name;
+	double price_m;
+	double price_l;
+};
+
+struct Type_Topping
+{
+	string topping;
+	double price;
+};
+
+class Guests
 {
 	vector<Guest_BIO> guests;
 public:
@@ -31,7 +44,6 @@ public:
 		guests.push_back(new_guest);
 		return true;
 	}
-
 	int log_in(string phone_number)
 	{
 		for(int i = 0; i < guests.size(); i++)
@@ -41,24 +53,10 @@ public:
 		}
 		return -1;
 	}
-
 	vector<Guest_BIO> get_guests_vector()
 	{
 		return guests;
 	}
-};
-
-struct Type_Coffee
-{
-	string coffee_name;
-	double price_m;
-	double price_l;
-};
-
-struct Type_Topping
-{
-	string topping;
-	double price;
 };
 
 class Coffee_Shop
@@ -95,6 +93,32 @@ public:
 	vector<Type_Topping> get_topping_types()
 	{
 		return types_topping;
+	}
+};
+
+class Receipt
+{
+	double sum;
+	Guest_BIO g1;
+	vector<Type_Coffee> coffees;
+	vector<Type_Topping> toppings;
+public:
+	void set_guest(Guest_BIO &g1)
+	{
+		this->g1 = g1;
+	}
+	void choose_coffee(vector<Type_Coffee> c1, int pos)
+	{
+		coffees.push_back(c1.at(pos));
+	}
+	void choose_topping(vector<Type_Topping> t1, int pos, int ammount_of_topping)
+	{
+		for(int i = 0; i < ammount_of_topping; i++)
+			toppings.push_back(t1.at(pos));
+	}
+	int get_ammount_of_coffee()
+	{
+		return coffees.size();
 	}
 };
 
@@ -196,11 +220,15 @@ class Menu_Handler
 	Coffee_Shop c1;
 	Guests g1;
 	IO_Manager manager;
+	Receipt r1;
 	char yes_no;
 
 	int switcher;
+	int position;
+	int ammount;
 
 	string coffee_name;
+	
 	double price_m;
 	double price_l;
 
@@ -241,7 +269,6 @@ public:
 			}
 		}
 	}
-	
 	void menu()
 	{
 		manager.load_into_menu(c1);
@@ -278,6 +305,7 @@ public:
 							cin >> price_l;
 							c1.add_coffee_type(coffee_name, price_m, price_l);
 							manager.save_to_file(c1);
+							yes_no = true;
 						}
 						else if(switcher == 2)
 						{
@@ -288,6 +316,7 @@ public:
 							cin >> price;
 							c1.add_topping_type(topping_name, price);
 							manager.save_to_file(c1);
+							yes_no = true;
 						}
 						else
 						{
@@ -302,14 +331,29 @@ public:
 				Guest_BIO *new_guest = login_as_guest(g1, phone_number);
 				cout << "Welcome back, here is a menu";
 				show_coffee_shop_menu();
+				do
+				{
+					std::cout << "Which kind of coffee do you want to order, enter the number of position: ";
+					std::cin >> position;
+					r1.choose_coffee(c1.get_coffee_types(), position);
+					std::cout << "Want to order some more or choose topping(y/n): ";
+					std::cin >> yes_no;
+				} while (yes_no == 'n' || yes_no == 'N');
+				int size;
+				for(int i = 0; i < size; i++)
+				{
+					std::cout << "Choose topping from menu(0 - nothing), and it's ammount: ";
+					std::cin >> position >> ammount;
+					r1.choose_topping(c1.get_topping_types(), position, ammount);
+				}
+				
 			}
 		}
 		else if(switcher == 2)
 		{
-			//
+			show_coffee_shop_menu();
 		}
 	}
-
 	Guest_BIO* login_as_guest(Guests g1 ,string phone_number)
 	{
 		vector<Guest_BIO> guest_box = g1.get_guests_vector();
