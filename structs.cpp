@@ -248,54 +248,65 @@ public:
 		manager.save_to_file(c1);
 		manager.load_users(g1);
 		cout << "\t\t\t\t\t\t\t\tWelcome\n";
-		cout << "> Enter your phone number: ";
-		cin >> phone_number;
-		if(phone_number == "admin")
+
+		cout << "Do you want to use/create discount card, or just make an order(1/2): ";
+
+		cin >> switcher;
+		if(switcher == 1)
 		{
-			cin.ignore();
-			cout << "Enter password: ";
-			getline(cin, password);
-			if(password == "admin")
+			cout << "> Enter your phone number: ";
+			cin >> phone_number;
+			if(phone_number == "admin")
 			{
-				do
-				{					
-					cout << "Coffee or topping(1/2): ";
-					cin >> switcher;
-					if(switcher == 1)
-					{
-						cin.ignore();
-						cout << "Enter name of coffee: ";
-						getline(cin, coffee_name);
-						cout << "Enter price for medium cup: ";
-						cin >> price_m;
-						cout << "Enter price fo large cup: ";
-						cin >> price_l;
-						c1.add_coffee_type(coffee_name, price_m, price_l);
-						manager.save_to_file(c1);
-					}
-					else if(switcher == 2)
-					{
-						cin.ignore();
-						cout << "Enter name of topping: ";
-						getline(cin, topping_name);
-						cout << "Enter price for it: ";
-						cin >> price;
-						c1.add_topping_type(topping_name, price);
-						manager.save_to_file(c1);
-					}
-					else
-					{
-						cout << "Invalid value";
-						yes_no = false;
-					}
-				} while (yes_no == false);
+				cin.ignore();
+				cout << "Enter password: ";
+				getline(cin, password);
+				if(password == "admin")
+				{
+					do
+					{					
+						cout << "Coffee or topping(1/2): ";
+						cin >> switcher;
+						if(switcher == 1)
+						{
+							cin.ignore();
+							cout << "Enter name of coffee: ";
+							getline(cin, coffee_name);
+							cout << "Enter price for medium cup: ";
+							cin >> price_m;
+							cout << "Enter price fo large cup: ";
+							cin >> price_l;
+							c1.add_coffee_type(coffee_name, price_m, price_l);
+							manager.save_to_file(c1);
+						}
+						else if(switcher == 2)
+						{
+							cin.ignore();
+							cout << "Enter name of topping: ";
+							getline(cin, topping_name);
+							cout << "Enter price for it: ";
+							cin >> price;
+							c1.add_topping_type(topping_name, price);
+							manager.save_to_file(c1);
+						}
+						else
+						{
+							cout << "Invalid value";
+							yes_no = false;
+						}
+					} while (yes_no == false);
+				}
+			}
+			else
+			{
+				Guest_BIO *new_guest = login_as_guest(g1, phone_number);
+				cout << "Welcome back, here is a menu";
+				show_coffee_shop_menu();
 			}
 		}
-		else
+		else if(switcher == 2)
 		{
-			Guest_BIO *new_guest = login_as_guest(g1, phone_number);
-			show_coffee_shop_menu();
-
+			//
 		}
 	}
 
@@ -308,9 +319,11 @@ public:
 		if(guest_number >= 0)
 		{
 			ptr = &guest_box[guest_number];
+			return ptr;
 		}
 		else if(guest_number == -1)
 		{
+			cout << "Wrong phone number, do you want to try again, or register new discount card(1/2): ";
 			cin >> switcher;
 			if(switcher == 1)
 			{
@@ -322,6 +335,7 @@ public:
 					if(guest_number >= 0)
 					{
 						ptr = &guest_box[guest_number];
+						return ptr;
 					}
 					if(guest_number == -1)
 					{
@@ -346,8 +360,8 @@ public:
 				guest_number = g1.log_in(phone_number);
 				ptr = &guest_box[guest_number];
 				manager.save_users(g1);
+				return ptr;
 			}		
 		}
-		return ptr;
 	}
 };
