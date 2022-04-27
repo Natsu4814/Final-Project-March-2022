@@ -11,8 +11,7 @@ struct Guest_BIO
 struct Type_Coffee
 {
 	string coffee_name;
-	double price_m;
-	double price_l;
+	double price;
 };
 
 struct Type_Topping
@@ -71,12 +70,11 @@ public:
 		login = "admin";
 		password = "admin";
 	}
-	void add_coffee_type(string coffee_name, double price_m, double price_l)
+	void add_coffee_type(string coffee_name, double price)
 	{
 		Type_Coffee new_type;
 		new_type.coffee_name = coffee_name;
-		new_type.price_m = price_m;
-		new_type.price_l = price_l;
+		new_type.price = price;
 		types_coffee.push_back(new_type);
 	}
 	void add_topping_type(string topping, double price)
@@ -99,13 +97,13 @@ public:
 class Receipt
 {
 	double sum;
-	Guest_BIO g1;
+	string name;
 	vector<Type_Coffee> coffees;
 	vector<Type_Topping> toppings;
 public:
-	void set_guest(Guest_BIO &g1)
+	void set_guest(string name)
 	{
-		this->g1 = g1;
+		this->name = name;
 	}
 	void choose_coffee(vector<Type_Coffee> c1, int pos)
 	{
@@ -119,6 +117,29 @@ public:
 	int get_ammount_of_coffee()
 	{
 		return coffees.size();
+	}
+	string get_user()
+	{
+		return name;
+	}
+	vector<Type_Coffee> get_coffees()
+	{
+		return coffees;
+	}
+	vector<Type_Topping> get_toppings()
+	{
+		return toppings;
+	}
+	void count_sum()
+	{
+		for(int i = 0; i < coffees.size(); i++)
+			sum += coffees.at(i).price;
+		for(int i = 0; i < toppings.size(); i++)
+			sum += toppings.at(i).price;
+	}
+	double get_sum()
+	{
+		return sum;
 	}
 };
 
@@ -137,7 +158,7 @@ public:
 		fout.open("coffee.txt");
 		for(int i = 0; i < coffee_buffer.size(); i++)
 		{
-			fout << coffee_buffer.at(i).coffee_name << " " << coffee_buffer.at(i).price_m << " " << coffee_buffer.at(i).price_l;
+			fout << coffee_buffer.at(i).coffee_name << " " << coffee_buffer.at(i).price;
 			if(i < coffee_buffer.size()-1)
 				fout << "\n";    
 		}
@@ -151,6 +172,7 @@ public:
 			if(i < topping_buffer.size()-1)
 				fout << "\n";
 		}
+		fout.close();
 	}
 //Menu loading	
 	void load_into_menu(Coffee_Shop& c1)
@@ -165,9 +187,8 @@ public:
 			getline (fin,line); 
 			strings = string_to_tok.tok(line, ' ');
 			name = strings[0];
-			double medium_cup = stod(strings[1]);
-			double big_cup = stod(strings[2]);
-			c1.add_coffee_type(name, medium_cup, big_cup);
+			double cup_price = stod(strings[1]);
+			c1.add_coffee_type(name, cup_price);
 		}
 		fin.close();
 		fin.open("toppings.txt");
@@ -189,7 +210,7 @@ public:
 		fout.open("guests.txt");
 			for(int i = 0; i < people_buffer.size(); i++)
 			{
-				fout << people_buffer.at(i).name << " " << people_buffer.at(i).phone_number;
+				fout << people_buffer.at(i).name << " " << people_buffer.at(i).phone_number << " " << people_buffer.at(i).count;
 				if(i < people_buffer.size()-1)
 					fout << "\n";
 			}
@@ -201,6 +222,7 @@ public:
 		string line;
 		string phone_number;
 		string name;
+		int count;
 		ifstream fin;
 		string* strings;
 		fin.open("guests.txt");
@@ -210,8 +232,32 @@ public:
 			strings = string_to_tok.tok(line, ' ');
 			name = strings[0];
 			phone_number = strings[1];
+			count = stoi(strings[3]);
 			g1.sign_up(name, phone_number);
 		}
+		fin.close();
+	}
+
+	void save_receipt(Receipt r1)
+	{
+		coffee_buffer = r1.get_coffees();
+		topping_buffer = r1.get_toppings();
+		ofstream fout;
+		fout.open("receipts.txt", ios_base::app);
+		fout << r1.get_user() << "\n";
+		for(int i = 0; i < coffee_buffer.size(); i++)
+		{
+			fout << coffee_buffer.at(i).coffee_name << " " << coffee_buffer.at(i).price;
+			if(i < coffee_buffer.size()-1)
+				fout << "\n";
+		}
+		for(int i = 0; i < topping_buffer.size(); i++)
+		{
+			fout << topping_buffer.at(i).topping << " " << topping_buffer.at(i).price;
+			if(i < topping_buffer.size()-1)
+				fout << "\n";
+		}
+		fout << r1.get_sum() << " UAH\n====================";
 	}
 };
 
@@ -252,7 +298,7 @@ public:
 		{
 			for(int i = 0; i < types_coffee.size(); i++)
 			{
-				cout << i+1 << "." << types_coffee.at(i).coffee_name << " M:" << types_coffee.at(i).price_m << " L:" << types_coffee.at(i).price_l << "\n";
+				cout << i+1 << "." << types_coffee.at(i).coffee_name << " P:" << types_coffee.at(i).price << " UAH\n";
 			}
 		}
 		cout << "Toppings: \n";
@@ -275,9 +321,7 @@ public:
 		manager.save_to_file(c1);
 		manager.load_users(g1);
 		cout << "\t\t\t\t\t\t\t\tWelcome\n";
-
 		cout << "Do you want to use/create discount card, or just make an order(1/2): ";
-
 		cin >> switcher;
 		if(switcher == 1)
 		{
@@ -303,7 +347,7 @@ public:
 							cin >> price_m;
 							cout << "Enter price fo large cup: ";
 							cin >> price_l;
-							c1.add_coffee_type(coffee_name, price_m, price_l);
+							c1.add_coffee_type(coffee_name, price);
 							manager.save_to_file(c1);
 							yes_no = true;
 						}
@@ -338,15 +382,23 @@ public:
 					r1.choose_coffee(c1.get_coffee_types(), position);
 					std::cout << "Want to order some more or choose topping(y/n): ";
 					std::cin >> yes_no;
-				} while (yes_no == 'n' || yes_no == 'N');
-				int size;
+				} while (yes_no == 'y' || yes_no == 'Y');
+				int size = r1.get_ammount_of_coffee();
 				for(int i = 0; i < size; i++)
 				{
-					std::cout << "Choose topping from menu(0 - nothing), and it's ammount: ";
-					std::cin >> position >> ammount;
-					r1.choose_topping(c1.get_topping_types(), position, ammount);
+					std::cout << "Choose topping from menu(0 - nothing): ";
+					std::cin >> position;
+					if(position == 0)
+						break;
+					else if(position != 0 && position <! 0)
+					{
+						std::cout << "Enter ammount of topping";
+						std::cin >> ammount;
+						r1.choose_topping(c1.get_topping_types(), position, ammount);
+					}
 				}
-				
+				r1.set_guest(new_guest->name);
+				manager.save_receipt(r1);
 			}
 		}
 		else if(switcher == 2)
@@ -363,6 +415,7 @@ public:
 		if(guest_number >= 0)
 		{
 			ptr = &guest_box[guest_number];
+			ptr->count+=1;
 			return ptr;
 		}
 		else if(guest_number == -1)
@@ -398,7 +451,7 @@ public:
 				cin.ignore();
 				string name;
 				getline(cin, name);
-				cout << "Enter your phone number";
+				cout << "Enter your phone number: ";
 				getline(cin, phone_number);
 				g1.sign_up(name, phone_number);
 				guest_number = g1.log_in(phone_number);

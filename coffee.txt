@@ -1,10 +1,10 @@
-Espresso 10 15
-Americano 5 10
-Doppio 15 20
-Makkiato 12 17
-Ristretto 5 10
-Lungo 12 17
-Korretto 15 25
-Irish 20 30
-Glace 25 35
-Frappe 20 25
+Espresso 10
+Americano 5
+Doppio 15
+Makkiato 12
+Ristretto 5
+Lungo 12
+Korretto 15
+Irish 20
+Glace 25
+Frappe 20
