@@ -350,7 +350,7 @@ public:
 		manager.save_to_file(c1); 
 		m2.load_users(g1);
  		cout << "\t\t\t\t\t\t\t\tWelcome\n";
-		cout << "Do you want to use/create discount card, or just make an order(1/2): ";
+		cout << "Do you want to use/create discount card(1/2)";
 		cin >> switcher;
 		if(switcher == 1)
 		{
@@ -431,8 +431,17 @@ public:
 				manager.save_receipt(r1);
 			}
 		}
-		else if(switcher == 2)
+		if(switcher == 2)
 		{
+			cout << "Enter your name: ";
+			cin.ignore();
+			string name;
+			getline(cin, name);
+			cout << "Enter your phone number: ";
+			getline(cin, phone_number);
+			manager.set_phone_number(phone_number);
+			g1.sign_up(name, phone_number);
+			m2.save_users(g1);
 			show_coffee_shop_menu();
 			do
 			{
@@ -456,10 +465,6 @@ public:
 					r1.choose_topping(c1.get_topping_types(), position, ammount);
 				}
 			}
-			cout << "Enter your name please: ";
-			getline(cin, name);
-			r1.set_name(name);
-			m2.save_users(g1);
 			manager.save_receipt(r1);
 		}
 	}
